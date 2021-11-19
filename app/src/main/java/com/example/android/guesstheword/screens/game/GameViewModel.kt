@@ -11,12 +11,18 @@ class GameViewModel: ViewModel() {
      private val _word = MutableLiveData<String>()
      val word : LiveData<String>
         get() = _word
-    // The current score
+    // The current score then encapsulate the mutable data
      private val _score = MutableLiveData<Int>()
      val score : LiveData<Int>
         get() = _score
 
+    private val _eventGameFinish = MutableLiveData<Boolean>()
+    val eventGameFinish : LiveData<Boolean>
+        get() = _eventGameFinish
 
+    fun onGameFinishComplete() {
+        _eventGameFinish.value = false
+    }
     // The list of words - the front of the list is the next word to guess
     private lateinit var wordList: MutableList<String>
     private fun resetList() {
@@ -45,11 +51,20 @@ class GameViewModel: ViewModel() {
         )
         wordList.shuffle()
     }
-
+    init {
+        Log.i("GameViewModel", "GameViewModel Created")
+//        set the game finish method at initialization
+        _eventGameFinish.value = false
+        resetList()
+        nextWord()
+//        set score
+        _score.value = 0
+    }
     private fun nextWord() {
         //Select and remove a word from the list
         if (wordList.isEmpty()) {
-//            gameFinished()
+//            rest to true when no more words to use
+          _eventGameFinish.value = true
         } else {
             _word.value = wordList.removeAt(0)
         }
@@ -65,13 +80,7 @@ class GameViewModel: ViewModel() {
         _score.value = (score.value)?.plus(1)
         nextWord()
     }
-    init {
-        Log.i("GameViewModel", "GameViewModel Created")
-        resetList()
-        nextWord()
-//        set score
-        _score.value = 0
-    }
+
 
     override fun onCleared() {
         super.onCleared()

@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -80,6 +81,13 @@ class GameFragment : Fragment() {
             binding.wordText.text = newWord.toString()
 
         })
+//        add gamefinished function using live data
+        viewModel.eventGameFinish.observe(this, Observer { gameOver ->
+            if (gameOver) {
+                gameFinished()
+                viewModel.onGameFinishComplete()
+            }
+        })
         return binding.root
 
     }
@@ -120,6 +128,8 @@ class GameFragment : Fragment() {
     private fun gameFinished() {
         val action = GameFragmentDirections.actionGameToScore(viewModel.score.value ?: 0)
         findNavController(this).navigate(action)
+//        notifiy me when the game is over
+        Toast.makeText(this.activity, "Game has Finished", Toast.LENGTH_SHORT).show()
     }
 
     /**
